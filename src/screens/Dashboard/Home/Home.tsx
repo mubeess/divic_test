@@ -93,7 +93,7 @@ export default function Home() {
           }
           data={data ? data.message : []}
           renderItem={({item}) => <ShipmentList markAll={markAll} {...item} />}
-          keyExtractor={item => item.name}
+          keyExtractor={(item, index) => index.toString()}
         />
       )}
       <FilterModal close={closeFilter} isOpen={filterOpen} />

@@ -5,6 +5,7 @@ import {colors} from '../../utils/colors';
 import {LogoImage} from '../../assets/Images';
 import Button from '../../components/Buttons/Button';
 import LoginModal from './components/LoginModal';
+import Animated, {FadeIn, FadeOut} from 'react-native-reanimated';
 
 export default function Login() {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -15,8 +16,11 @@ export default function Login() {
     setIsModalOpen(false);
   };
   return (
-    <View style={styles.conntainer}>
-      <StatusBar backgroundColor={colors.primary} />
+    <Animated.View
+      entering={FadeIn.duration(500)}
+      exiting={FadeOut.duration(500)}
+      style={styles.conntainer}>
+      <StatusBar animated backgroundColor={colors.primary} />
       <Image resizeMode="contain" source={LogoImage} style={styles.logo} />
       <Button
         label="Login"
@@ -26,7 +30,7 @@ export default function Login() {
         style={styles.button}
       />
       <LoginModal isOpen={isModalOpen} closeModal={closeModal} />
-    </View>
+    </Animated.View>
   );
 }
 

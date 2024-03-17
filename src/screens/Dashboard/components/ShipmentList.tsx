@@ -5,6 +5,7 @@ import CheckBox from '../../../components/Inputs/CheckBox';
 import {BoxImage} from '../../../assets/Images';
 import Text from '../../../components/Text/Text';
 import {ArrowRightIcon, ExpandIcon} from '../../../assets/Svg';
+import Animated, {Easing, FadeIn} from 'react-native-reanimated';
 export interface ItemProps {
   name: string;
   origin_state: string;
@@ -23,11 +24,12 @@ export default function ShipmentList({
 }: ItemProps) {
   const [marked, setMarked] = useState(false);
   const toggleMark = () => {
-    console.log(status);
     setMarked(prev => !prev);
   };
   return (
-    <View style={styles.container}>
+    <Animated.View
+      entering={FadeIn.duration(500).easing(Easing.ease)}
+      style={styles.container}>
       <CheckBox isChecked={markAll ? markAll : marked} onCheck={toggleMark} />
       <Image resizeMode="contain" style={styles.box} source={BoxImage} />
       <View style={styles.details}>
@@ -49,7 +51,7 @@ export default function ShipmentList({
       <TouchableOpacity activeOpacity={0.7} style={styles.expand}>
         <ExpandIcon color={colors.primary} />
       </TouchableOpacity>
-    </View>
+    </Animated.View>
   );
 }
 
