@@ -79,7 +79,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   locationText: {
-    fontSize: 10,
+    fontSize: 8,
   },
   name: {
     fontSize: 13,

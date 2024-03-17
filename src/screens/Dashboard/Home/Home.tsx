@@ -2,6 +2,7 @@ import {
   ActivityIndicator,
   FlatList,
   RefreshControl,
+  SafeAreaView,
   StatusBar,
   StyleSheet,
   View,
@@ -48,56 +49,60 @@ export default function Home() {
   }, [error]);
 
   return (
-    <View style={styles.container}>
-      <StatusBar barStyle="dark-content" backgroundColor={colors.white} />
-      <Header />
-      <Text style={styles.hello}>Hello,</Text>
-      <Text h1>{user.name}</Text>
-      <MyInput
-        IconLeft={<SearchIcon color={colors.gray} />}
-        placeholder="Search"
-      />
-      <View style={styles.actionButtons}>
-        <Button
-          onPress={openFilter}
-          backgroundColor={colors.inputBg}
-          IconLeft={<FilterIcon color={colors.iconColor} />}
-          style={styles.button}
-          fontColor={colors.iconColor}
-          label="Filters"
+    <SafeAreaView style={styles.iosContainer}>
+      <View style={styles.container}>
+        <StatusBar barStyle="dark-content" backgroundColor={colors.white} />
+        <Header />
+        <Text style={styles.hello}>Hello,</Text>
+        <Text h1>{user.name}</Text>
+        <MyInput
+          IconLeft={<SearchIcon color={colors.gray} />}
+          placeholder="Search"
         />
-        <Button
-          IconLeft={<ScanIcon color={colors.white} />}
-          style={styles.button}
-          label="Add Scan"
-        />
-      </View>
-
-      <View style={styles.shipmentSelection}>
-        <Text h1>Shipment</Text>
-
-        <View style={styles.checkBoxContainer}>
-          <CheckBox isChecked={markAll} onCheck={toggleMarkAll} />
-          <Text>Mark All</Text>
+        <View style={styles.actionButtons}>
+          <Button
+            onPress={openFilter}
+            backgroundColor={colors.inputBg}
+            IconLeft={<FilterIcon color={colors.iconColor} />}
+            style={styles.button}
+            fontColor={colors.iconColor}
+            label="Filters"
+          />
+          <Button
+            IconLeft={<ScanIcon color={colors.white} />}
+            style={styles.button}
+            label="Add Scan"
+          />
         </View>
-      </View>
-      {isLoading && (
-        <View style={styles.loading}>
-          <ActivityIndicator color={colors.primary} />
+
+        <View style={styles.shipmentSelection}>
+          <Text h2>Shipments</Text>
+
+          <View style={styles.checkBoxContainer}>
+            <CheckBox isChecked={markAll} onCheck={toggleMarkAll} />
+            <Text>Mark All</Text>
+          </View>
         </View>
-      )}
-      {!isLoading && (
-        <FlatList
-          refreshControl={
-            <RefreshControl refreshing={isFetching} onRefresh={refetch} />
-          }
-          data={data ? data.message : []}
-          renderItem={({item}) => <ShipmentList markAll={markAll} {...item} />}
-          keyExtractor={(item, index) => index.toString()}
-        />
-      )}
-      <FilterModal close={closeFilter} isOpen={filterOpen} />
-    </View>
+        {isLoading && (
+          <View style={styles.loading}>
+            <ActivityIndicator color={colors.primary} />
+          </View>
+        )}
+        {!isLoading && (
+          <FlatList
+            refreshControl={
+              <RefreshControl refreshing={isFetching} onRefresh={refetch} />
+            }
+            data={data ? data.message : []}
+            renderItem={({item}) => (
+              <ShipmentList markAll={markAll} {...item} />
+            )}
+            keyExtractor={(item, index) => index.toString()}
+          />
+        )}
+        <FilterModal close={closeFilter} isOpen={filterOpen} />
+      </View>
+    </SafeAreaView>
   );
 }
 
@@ -124,6 +129,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
+    marginBottom: 10,
   },
   checkBoxContainer: {
     flexDirection: 'row',
@@ -135,5 +141,9 @@ const styles = StyleSheet.create({
     width: '100%',
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  iosContainer: {
+    flex: 1,
+    backgroundColor: colors.white,
   },
 });
