@@ -5,28 +5,45 @@ import CheckBox from '../../../components/Inputs/CheckBox';
 import {BoxImage} from '../../../assets/Images';
 import Text from '../../../components/Text/Text';
 import {ArrowRightIcon, ExpandIcon} from '../../../assets/Svg';
-
-export default function ShipmentList() {
+export interface ItemProps {
+  name: string;
+  origin_state: string;
+  destination_state: string;
+  status: string;
+  company_currency: string;
+  markAll?: boolean;
+}
+export default function ShipmentList({
+  name,
+  origin_state,
+  status,
+  company_currency,
+  destination_state,
+  markAll,
+}: ItemProps) {
   const [marked, setMarked] = useState(false);
   const toggleMark = () => {
+    console.log(status);
     setMarked(prev => !prev);
   };
   return (
     <View style={styles.container}>
-      <CheckBox isChecked={marked} onCheck={toggleMark} />
+      <CheckBox isChecked={markAll ? markAll : marked} onCheck={toggleMark} />
       <Image resizeMode="contain" style={styles.box} source={BoxImage} />
       <View style={styles.details}>
-        <Text style={styles.name}>AWB</Text>
-        <Text h2>41785691423</Text>
+        <Text style={styles.name}>{company_currency}</Text>
+        <Text numberOfLines={1} h2>
+          {name}
+        </Text>
         <View style={styles.location}>
-          <Text style={styles.locationText}>Cairo</Text>
+          <Text style={styles.locationText}>{origin_state}</Text>
           <ArrowRightIcon color={colors.primary} />
-          <Text style={styles.locationText}>Nigeria</Text>
+          <Text style={styles.locationText}>{destination_state}</Text>
         </View>
       </View>
 
       <View style={[styles.status, {borderColor: colors.white}]}>
-        <Text style={{color: colors.primary}}>Recieved</Text>
+        <Text style={{color: colors.primary}}>{status}</Text>
       </View>
 
       <TouchableOpacity activeOpacity={0.7} style={styles.expand}>
@@ -46,6 +63,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 10,
     gap: 15,
+    marginBottom: 10,
   },
   box: {
     height: 40,
@@ -59,7 +77,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   locationText: {
-    fontSize: 13,
+    fontSize: 10,
   },
   name: {
     fontSize: 13,
