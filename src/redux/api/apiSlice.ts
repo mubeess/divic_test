@@ -46,9 +46,6 @@ export const apiSlice = createApi({
       query: () => ({
         url: `/method/frappe.client.get_list?doctype=AWB Status&fields=["*"]`,
       }),
-      transformErrorResponse: response => {
-        console.log(response);
-      },
     }),
   }),
 });
