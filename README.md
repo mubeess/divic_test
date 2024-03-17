@@ -26,7 +26,7 @@ Let Metro Bundler run in its _own_ terminal. Open a _new_ terminal from the _roo
 
 ```bash
 # craete a local.properties
-create local.properties folder inside andriod/app folder and copy the path to your to the. e.g sdk.dir={YOUR SDK DIR} and save.
+create local.properties file inside andriod/app folder and copy the path to your to the. e.g sdk.dir={YOUR SDK DIR} and save.
 # using npm
 npm run android
 
