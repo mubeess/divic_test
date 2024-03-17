@@ -12,9 +12,17 @@ import Text from '../../../components/Text/Text';
 import Input from '../../../components/Inputs/Input';
 import Button from '../../../components/Buttons/Button';
 import {useNavigation} from '@react-navigation/native';
-
+import * as Yup from 'yup';
 import {RootStackParamList} from '../../../Navigations/Stack/MainAppStack';
 import {StackNavigationProp} from '@react-navigation/stack';
+import {useFormik} from 'formik';
+import {useLoginUserMutation} from '../../../redux/api/apiSlice';
+import {useEffect} from 'react';
+import {handleError} from '../../../utils';
+import {useAppDispatch} from '../../../redux';
+import {setUser} from '../../../redux/slices/userSlice';
+
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export interface ModalLoginProps {
   isOpen?: boolean;
@@ -27,9 +35,65 @@ type DashboardScreenNavigationProp = StackNavigationProp<
 const {height} = Dimensions.get('window');
 export default function LoginModal({isOpen, closeModal}: ModalLoginProps) {
   const navigation = useNavigation<DashboardScreenNavigationProp>();
-  const routeToDashBoard = () => {
-    navigation.navigate('Dashboard');
+
+  const dispatch = useAppDispatch();
+  const [loginUser, {error, isLoading, data, isSuccess, isError}] =
+    useLoginUserMutation();
+  const initialValues = {
+    usr: '',
+    pwd: '',
   };
+  const validationSchema = Yup.object({
+    usr: Yup.string().required('Email/User Name is required'),
+    pwd: Yup.string()
+      .min(7, 'Password must be more than 6 characters')
+      .required(),
+  });
+  const formik = useFormik({
+    initialValues,
+    validationSchema: validationSchema,
+    onSubmit: async values => {
+      await loginUser(values);
+    },
+  });
+  const {handleChange, handleSubmit, values, errors} = formik;
+  const {pwd, usr} = values;
+  const routeToDashBoard = async () => {
+    await AsyncStorage.setItem(
+      'credentials',
+      JSON.stringify({username: usr, fullname: data.name}),
+    );
+
+    navigation.navigate('Dashboard');
+    closeModal();
+  };
+  const clearCache = async () => {
+    await AsyncStorage.removeItem('token');
+  };
+  useEffect(() => {
+    if (isError) {
+      handleError(error);
+    }
+  }, [error, isError]);
+
+  useEffect(() => {
+    if (isSuccess) {
+      dispatch(
+        setUser({
+          name: data.full_name,
+          image: '',
+          token: data.home_page,
+        }),
+      );
+      routeToDashBoard();
+      console.log(data);
+    }
+  }, [isSuccess, data]);
+
+  useEffect(() => {
+    clearCache();
+  }, []);
+
   return (
     <Modal animationType="slide" transparent={true} visible={isOpen}>
       <View style={styles.layer}>
@@ -44,14 +108,34 @@ export default function LoginModal({isOpen, closeModal}: ModalLoginProps) {
               Login
             </Text>
             <Text style={styles.loginDescription}>
-              Please enter your First, Last name and your phone number in order
-              to register
+              Please enter Your Login Details Below To Proceed
             </Text>
-            <Input style={styles.input} label="URL" />
-            <Input style={styles.input} label="Username/Email" />
-            <Input style={styles.input} label="Password" />
+
+            <Input
+              error={Boolean(formik.touched.usr && errors.usr)}
+              value={usr}
+              onChange={handleChange('usr')}
+              style={styles.input}
+              label="Username/Email"
+            />
+            {formik.touched.usr && errors.usr ? (
+              <Text style={{color: 'red'}}>{errors.usr}</Text>
+            ) : null}
+            <Input
+              error={Boolean(formik.touched.pwd && errors.pwd)}
+              secureEntry={true}
+              value={pwd}
+              onChange={handleChange('pwd')}
+              style={styles.input}
+              label="Password"
+            />
+            {formik.touched.pwd && errors.pwd ? (
+              <Text style={{color: 'red'}}>{errors.pwd}</Text>
+            ) : null}
             <Button
-              onPress={routeToDashBoard}
+              isLoading={isLoading}
+              disabled={Boolean(!usr || !pwd)}
+              onPress={handleSubmit}
               style={styles.button}
               label="Login"
             />
