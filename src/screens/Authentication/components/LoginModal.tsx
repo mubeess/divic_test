@@ -63,7 +63,7 @@ export default function LoginModal({isOpen, closeModal}: ModalLoginProps) {
     usr: Yup.string().required('Email/User Name is required'),
     pwd: Yup.string()
       .min(7, 'Password must be more than 6 characters')
-      .required(),
+      .required('Password Is reqiured'),
   });
   const formik = useFormik({
     initialValues,
@@ -101,7 +101,9 @@ export default function LoginModal({isOpen, closeModal}: ModalLoginProps) {
           token: data.home_page,
         }),
       );
-      routeToDashBoard();
+      setTimeout(() => {
+        routeToDashBoard();
+      }, 1000);
     }
   }, [isSuccess, data]);
 
@@ -173,8 +175,8 @@ const styles = StyleSheet.create({
   content: {
     height: height - 50,
     backgroundColor: colors.white,
-    borderTopLeftRadius: 10,
-    borderTopRightRadius: 10,
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
     marginTop: 'auto',
     padding: 10,
     position: 'relative',
@@ -208,8 +210,10 @@ const styles = StyleSheet.create({
     marginVertical: 10,
   },
   scrollView: {
-    backgroundColor: colors.white,
     flex: 1,
+    backgroundColor: colors.white,
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
   },
   button: {
     marginTop: 'auto',
