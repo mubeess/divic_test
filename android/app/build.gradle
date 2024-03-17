@@ -84,6 +84,12 @@ android {
         versionName "1.0"
     }
     signingConfigs {
+        release {
+      storeFile file('shipex.keystore')
+      storePassword '64942224'
+      keyAlias 'shipex'
+      keyPassword '64942224'
+    }
         debug {
             storeFile file('debug.keystore')
             storePassword 'android'

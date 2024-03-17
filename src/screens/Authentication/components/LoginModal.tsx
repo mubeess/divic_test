@@ -23,6 +23,11 @@ import {useAppDispatch} from '../../../redux';
 import {setUser} from '../../../redux/slices/userSlice';
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import Animated, {
+  useAnimatedStyle,
+  useSharedValue,
+  withTiming,
+} from 'react-native-reanimated';
 
 export interface ModalLoginProps {
   isOpen?: boolean;
@@ -35,13 +40,24 @@ type DashboardScreenNavigationProp = StackNavigationProp<
 const {height} = Dimensions.get('window');
 export default function LoginModal({isOpen, closeModal}: ModalLoginProps) {
   const navigation = useNavigation<DashboardScreenNavigationProp>();
-
+  const sharedValue = useSharedValue(0);
+  const animatedErrorStyle = useAnimatedStyle(() => {
+    return {
+      transform: [{scaleY: sharedValue.value}],
+    };
+  });
   const dispatch = useAppDispatch();
   const [loginUser, {error, isLoading, data, isSuccess, isError}] =
     useLoginUserMutation();
   const initialValues = {
     usr: '',
     pwd: '',
+  };
+  const displayError = () => {
+    sharedValue.value = withTiming(1, {duration: 1000});
+    setTimeout(() => {
+      sharedValue.value = withTiming(0, {duration: 500});
+    }, 4000);
   };
   const validationSchema = Yup.object({
     usr: Yup.string().required('Email/User Name is required'),
@@ -71,8 +87,8 @@ export default function LoginModal({isOpen, closeModal}: ModalLoginProps) {
     await AsyncStorage.removeItem('token');
   };
   useEffect(() => {
-    if (isError) {
-      handleError(error);
+    if (isError && error) {
+      displayError();
     }
   }, [error, isError]);
 
@@ -86,7 +102,6 @@ export default function LoginModal({isOpen, closeModal}: ModalLoginProps) {
         }),
       );
       routeToDashBoard();
-      console.log(data);
     }
   }, [isSuccess, data]);
 
@@ -104,6 +119,11 @@ export default function LoginModal({isOpen, closeModal}: ModalLoginProps) {
               <ChevronLeftIcon color={colors.primary} />
               <Text style={styles.cancelText}>Cancel</Text>
             </TouchableOpacity>
+
+            <Animated.View style={[styles.error, animatedErrorStyle]}>
+              <Text style={styles.erroText}>{error?.data?.message}</Text>
+            </Animated.View>
+
             <Text style={styles.loginText} h1>
               Login
             </Text>
@@ -157,6 +177,7 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 10,
     marginTop: 'auto',
     padding: 10,
+    position: 'relative',
   },
   decoration: {
     height: 5,
@@ -192,5 +213,23 @@ const styles = StyleSheet.create({
   },
   button: {
     marginTop: 'auto',
+  },
+  error: {
+    width: '100%',
+    height: 40,
+    borderRadius: 10,
+    backgroundColor: '#f2252523',
+    borderWidth: 1,
+    borderColor: 'red',
+    justifyContent: 'center',
+    alignItems: 'center',
+    position: 'absolute',
+    marginTop: 40,
+    marginLeft: 10,
+    zIndex: 999999999999,
+  },
+  erroText: {
+    color: 'red',
+    textAlign: 'center',
   },
 });

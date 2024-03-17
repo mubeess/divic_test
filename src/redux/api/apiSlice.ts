@@ -3,11 +3,12 @@ import {LoginRequest} from './types';
 import {extractCookies} from '../../utils';
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import {BASE_URL} from '../../utils/config';
 
 export const apiSlice = createApi({
   reducerPath: 'api',
   baseQuery: fetchBaseQuery({
-    baseUrl: 'https://shippex-demo.bc.brandimic.com/api',
+    baseUrl: BASE_URL,
     prepareHeaders: async headers => {
       const token = await AsyncStorage.getItem('token');
       const credentials = await AsyncStorage.getItem('credentials');
@@ -27,7 +28,7 @@ export const apiSlice = createApi({
   endpoints: builder => ({
     loginUser: builder.mutation({
       query: (loginRequest: LoginRequest) => ({
-        url: 'https://shippex-demo.bc.brandimic.com/api/method/login',
+        url: '/method/login',
         method: 'POST',
         body: loginRequest,
       }),
@@ -38,12 +39,12 @@ export const apiSlice = createApi({
     }),
     getShipMents: builder.query({
       query: () => ({
-        url: `https://shippex-demo.bc.brandimic.com/api/method/frappe.client.get_list?doctype=AWB&fields=["*"]`,
+        url: `/method/frappe.client.get_list?doctype=AWB&fields=["*"]`,
       }),
     }),
     getFilters: builder.query({
       query: () => ({
-        url: `https://shippex-demo.bc.brandimic.com/api/method/frappe.client.get_list?doctype=AWB Status&fields=["*"]`,
+        url: `/method/frappe.client.get_list?doctype=AWB Status&fields=["*"]`,
       }),
       transformErrorResponse: response => {
         console.log(response);
